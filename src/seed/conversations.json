@@ -1,0 +1,76 @@
+[
+  {
+    "id": "seed-agent",
+    "title": "Caffeine left before bed",
+    "createdAt": "2026-07-17T09:12:00.000Z",
+    "updatedAt": "2026-07-17T09:13:10.000Z",
+    "messages": [
+      {
+        "id": "m-a1",
+        "role": "user",
+        "content": "If I drink a coffee with 95mg of caffeine at 2pm, roughly how much is still in my system at 11pm when I go to bed?",
+        "createdAt": "2026-07-17T09:12:00.000Z"
+      },
+      {
+        "id": "m-a2",
+        "role": "assistant",
+        "createdAt": "2026-07-17T09:13:10.000Z",
+        "toolCalls": [
+          {
+            "id": "t-a1",
+            "label": "Searching the web",
+            "detail": "average caffeine half-life in adults",
+            "status": "done"
+          },
+          {
+            "id": "t-a2",
+            "label": "Running calculation",
+            "detail": "95 × 0.5 ^ (9 / 5.5)",
+            "status": "done"
+          }
+        ],
+        "content": "Short answer: **about 28 mg** — roughly a third of the original dose.\n\nHere's the reasoning:\n\n- Caffeine's half-life in a healthy adult averages **~5.5 hours** (it ranges from 4 to 9.5 hours depending on genetics, liver enzymes, pregnancy, and smoking).\n- From 2pm to 11pm is **9 hours**, which is about **1.6 half-lives**.\n\nUsing exponential decay:\n\n```text\nremaining = 95 mg × (0.5) ^ (9 / 5.5)\n          = 95 mg × 0.320\n          ≈ 30 mg\n```\n\nSo you'd have roughly **28–30 mg** on board at bedtime — comparable to a cup of green tea. Enough to lengthen the time it takes to fall asleep and to shave a bit off deep sleep for many people.\n\n> If you're caffeine-sensitive, a common rule of thumb is to stop caffeine **8–10 hours before bed**. For an 11pm bedtime that means a last cup around **1–3pm**."
+      }
+    ]
+  },
+  {
+    "id": "seed-react",
+    "title": "Debounced search input in React",
+    "createdAt": "2026-07-16T15:40:00.000Z",
+    "updatedAt": "2026-07-16T15:41:30.000Z",
+    "messages": [
+      {
+        "id": "m-r1",
+        "role": "user",
+        "content": "How do I build a debounced search input in React? I'm firing an API call on every keystroke and it's hammering my backend.",
+        "createdAt": "2026-07-16T15:40:00.000Z"
+      },
+      {
+        "id": "m-r2",
+        "role": "assistant",
+        "createdAt": "2026-07-16T15:41:30.000Z",
+        "content": "The cleanest fix is a small `useDebouncedValue` hook. You keep the input fully controlled, but only *react* to the value once it stops changing for a moment.\n\n```tsx\nimport { useEffect, useState } from 'react'\n\nexport function useDebouncedValue<T>(value: T, delay = 300): T {\n  const [debounced, setDebounced] = useState(value)\n\n  useEffect(() => {\n    const id = setTimeout(() => setDebounced(value), delay)\n    return () => clearTimeout(id) // cancel if value changes first\n  }, [value, delay])\n\n  return debounced\n}\n```\n\nThen fetch off the debounced value instead of the raw input:\n\n```tsx\nfunction Search() {\n  const [query, setQuery] = useState('')\n  const debouncedQuery = useDebouncedValue(query, 300)\n\n  useEffect(() => {\n    if (!debouncedQuery) return\n    const controller = new AbortController()\n    fetch(`/api/search?q=${debouncedQuery}`, { signal: controller.signal })\n    return () => controller.abort() // cancel stale requests\n  }, [debouncedQuery])\n\n  return <input value={query} onChange={(e) => setQuery(e.target.value)} />\n}\n```\n\nTwo things worth calling out:\n\n1. The cleanup in the hook is what makes it a debounce — each new keystroke clears the previous timer.\n2. `AbortController` cancels in-flight requests so a slow early response can't overwrite a newer one (the classic race condition).\n\nFor typeahead, `300ms` feels responsive; bump to `500ms` if your API is heavy."
+      }
+    ]
+  },
+  {
+    "id": "seed-db",
+    "title": "PostgreSQL vs MongoDB",
+    "createdAt": "2026-07-15T11:05:00.000Z",
+    "updatedAt": "2026-07-15T11:06:20.000Z",
+    "messages": [
+      {
+        "id": "m-d1",
+        "role": "user",
+        "content": "I'm starting a new SaaS project. Should I use PostgreSQL or MongoDB?",
+        "createdAt": "2026-07-15T11:05:00.000Z"
+      },
+      {
+        "id": "m-d2",
+        "role": "assistant",
+        "createdAt": "2026-07-15T11:06:20.000Z",
+        "content": "For most SaaS products, **start with PostgreSQL** — but here's the honest tradeoff so you can decide for your case.\n\n| Dimension | PostgreSQL | MongoDB |\n| --- | --- | --- |\n| Data shape | Relational, structured | Flexible / nested documents |\n| Schema | Enforced (a feature, not a bug) | Schema-on-read |\n| Transactions | Rock-solid, multi-row ACID | Supported, but newer |\n| Joins | First-class | Awkward (`$lookup`) |\n| JSON | `jsonb` — excellent | Native |\n| Scaling writes | Vertical + read replicas | Horizontal sharding built in |\n\n**Pick PostgreSQL when:**\n\n- Your data has clear relationships (users, orgs, subscriptions, invoices).\n- You want reporting, analytics, or ad-hoc queries later.\n- You value strong consistency and constraints.\n\n**Pick MongoDB when:**\n\n- Your documents are genuinely schema-less or deeply nested.\n- You're ingesting huge write volumes that need horizontal sharding on day one.\n- The access pattern is \"fetch this whole document by id.\"\n\nThe underrated point: Postgres' `jsonb` column gives you document-style flexibility **inside** a relational database, so you rarely have to choose up front. Start relational, drop unstructured blobs into `jsonb`, and only reach for Mongo if a specific workload demands it."
+      }
+    ]
+  }
+]

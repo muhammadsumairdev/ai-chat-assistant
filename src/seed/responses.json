@@ -1,0 +1,41 @@
+[
+  {
+    "id": "https",
+    "match": ["https", "ssl", "tls", "certificate", "encryption", "secure connection"],
+    "answer": "HTTPS is just HTTP wrapped in an encrypted, verified tunnel. Here's what happens when you open a page:\n\n1. **Hello + certificate.** Your browser connects and the server presents a TLS certificate — a file signed by a trusted Certificate Authority that says \"this really is example.com.\"\n2. **Verify identity.** Your browser checks that signature against its built-in list of trusted CAs. If it doesn't check out, you get the scary red warning.\n3. **Agree on a secret.** Using public-key cryptography, the two sides perform a handshake and derive a shared symmetric key that no eavesdropper can compute — even one recording the whole exchange.\n4. **Talk in private.** From then on, every request and response is encrypted with that fast symmetric key.\n\nSo HTTPS gives you three things at once:\n\n- **Confidentiality** — nobody on the network can read the traffic.\n- **Integrity** — nobody can tamper with it undetected.\n- **Authenticity** — you're talking to the real server, not an impostor.\n\nThe padlock in your address bar means all three checks passed."
+  },
+  {
+    "id": "palindrome",
+    "match": ["palindrome", "python function", "reverse string check"],
+    "answer": "Here's a clean, robust version that ignores punctuation, spaces, and case:\n\n```python\ndef is_palindrome(s: str) -> bool:\n    cleaned = [c.lower() for c in s if c.isalnum()]\n    return cleaned == cleaned[::-1]\n```\n\nHow it works:\n\n- `c.isalnum()` drops anything that isn't a letter or digit, so `\"A man, a plan, a canal: Panama\"` still counts.\n- `c.lower()` makes the check case-insensitive.\n- `cleaned[::-1]` reverses the list, and we compare it to the original.\n\nA few quick checks:\n\n```python\nassert is_palindrome(\"A man, a plan, a canal: Panama\")\nassert is_palindrome(\"racecar\")\nassert not is_palindrome(\"hello\")\n```\n\nIf you're processing very long strings and want to avoid building the reversed copy, use two pointers instead:\n\n```python\ndef is_palindrome(s: str) -> bool:\n    chars = [c.lower() for c in s if c.isalnum()]\n    i, j = 0, len(chars) - 1\n    while i < j:\n        if chars[i] != chars[j]:\n            return False\n        i, j = i + 1, j - 1\n    return True\n```"
+  },
+  {
+    "id": "rest-graphql",
+    "match": ["rest", "graphql", "api design", "over-fetching"],
+    "answer": "Both are ways to expose an API over HTTP — they just make different tradeoffs.\n\n| Dimension | REST | GraphQL |\n| --- | --- | --- |\n| Endpoints | Many (`/users`, `/users/1/posts`) | One (`/graphql`) |\n| Fetching | Fixed shape per endpoint | Client asks for exactly the fields it needs |\n| Over/under-fetching | Common | Avoided by design |\n| Caching | Easy (HTTP + URLs) | Harder (needs tooling) |\n| Learning curve | Low | Higher (schema, resolvers) |\n| Versioning | `/v2/...` | Evolve the schema, deprecate fields |\n\n**Reach for REST when:**\n\n- Your resources are simple and CRUD-shaped.\n- You want to lean on HTTP caching and CDNs.\n- The team wants the smallest possible learning curve.\n\n**Reach for GraphQL when:**\n\n- Clients need wildly different slices of the same data (think a mobile app and a dashboard).\n- You're aggregating several backend services behind one graph.\n- Front-end teams want to move without waiting on new endpoints.\n\nRule of thumb: **start with REST**, and adopt GraphQL when over-fetching and endpoint sprawl become a real, recurring pain — not before."
+  },
+  {
+    "id": "kyoto",
+    "match": ["kyoto", "trip", "itinerary", "travel", "japan", "vacation"],
+    "tools": [
+      { "label": "Searching the web", "detail": "top sights and neighborhoods in Kyoto" },
+      { "label": "Checking travel times", "detail": "walking and bus routes between districts" }
+    ],
+    "answer": "Here's a walkable 3-day plan that groups sights by neighborhood so you're not crisscrossing the city.\n\n### Day 1 — Southern Higashiyama\n\n- **Fushimi Inari Taisha** at opening (7–8am) to beat the crowds on the famous torii-gate path.\n- **Kiyomizu-dera** and the lantern-lit lanes of **Sannenzaka** and **Ninenzaka**.\n- Evening stroll through **Gion**; if you're lucky you'll spot a geiko heading to an appointment.\n\n### Day 2 — Arashiyama + Northwest\n\n- **Arashiyama Bamboo Grove** early, then the gardens of **Tenryu-ji**.\n- Cross the **Togetsukyo Bridge**; lunch by the river.\n- Afternoon: **Kinkaku-ji** (the Golden Pavilion), then the rock garden at **Ryoan-ji**.\n\n### Day 3 — Central + Northern Higashiyama\n\n- The **Philosopher's Path** to **Ginkaku-ji** (the Silver Pavilion).\n- **Nishiki Market** for street food and knives.\n- Wrap up at **Nijo Castle** with its nightingale floors.\n\n**Practical notes**\n\n- Get an **ICOCA** card for buses and trains — Kyoto's buses are the workhorse.\n- Temples generally close by **5pm**, so front-load sightseeing.\n- Spring (cherry blossoms) and November (autumn leaves) are gorgeous but crowded — book lodging early."
+  },
+  {
+    "id": "react-debounce",
+    "match": ["debounce", "react hook", "search input", "keystroke"],
+    "answer": "The idiomatic fix is a tiny `useDebouncedValue` hook — react to the value only after it stops changing:\n\n```tsx\nimport { useEffect, useState } from 'react'\n\nexport function useDebouncedValue<T>(value: T, delay = 300): T {\n  const [debounced, setDebounced] = useState(value)\n  useEffect(() => {\n    const id = setTimeout(() => setDebounced(value), delay)\n    return () => clearTimeout(id)\n  }, [value, delay])\n  return debounced\n}\n```\n\nDrive your fetch off the debounced value, and cancel stale requests with `AbortController` so a slow early response can't clobber a newer one. `300ms` feels responsive for typeahead."
+  },
+  {
+    "id": "greeting",
+    "match": ["hello", "hi there", "hey", "good morning", "howdy"],
+    "answer": "Hey! 👋 I'm **Aster**, a demo AI assistant. I can explain concepts, write and review code, compare options in tables, and even show my \"agent steps\" when a question needs a little research.\n\nTry asking me to explain HTTPS, write a Python function, compare two technologies, or plan a trip — or just type whatever's on your mind."
+  },
+  {
+    "id": "capabilities",
+    "match": ["what can you do", "who are you", "help", "capabilities", "what are you"],
+    "answer": "I'm **Aster** — a portfolio demo of AI product UX. A few things I show off:\n\n- **Streaming** answers, token by token, with a Stop and Regenerate button.\n- **Agent steps** — collapsible tool-call blocks (\"Searching the web…\") that resolve before some answers.\n- **Rich markdown** — code blocks with syntax highlighting and copy buttons, tables, and lists.\n- **Conversation history** in the sidebar, auto-titled from your first message.\n\nUnder the hood this is a mock engine, but there's a **bring-your-own-API-key** mode in Settings that streams from a real model. Ask me anything to see it in action."
+  }
+]

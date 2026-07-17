@@ -1,0 +1,22 @@
+[
+  {
+    "label": "Explain how HTTPS works",
+    "sublabel": "in plain language",
+    "prompt": "Explain how HTTPS works in plain language."
+  },
+  {
+    "label": "Write a palindrome checker",
+    "sublabel": "in Python",
+    "prompt": "Write a Python function that checks if a string is a palindrome, ignoring punctuation and case."
+  },
+  {
+    "label": "Compare REST and GraphQL",
+    "sublabel": "as a table",
+    "prompt": "Compare REST and GraphQL as a table and tell me when to use each."
+  },
+  {
+    "label": "Plan a 3-day trip to Kyoto",
+    "sublabel": "with an itinerary",
+    "prompt": "Plan a 3-day trip to Kyoto with a day-by-day itinerary."
+  }
+]
